@@ -53,6 +53,21 @@ class Owner:
     def __unload(self):
         self.session.close()
 
+    #@commands.command()
+    #async def clearlog(self):
+    #    """Clears the log"""
+    #    f = open('/var/www/SCPSLBot/SCPSLBot/data/red/red.log', 'r+')
+    #    f.truncate()
+
+    @checks.is_owner()
+    @commands.command(hidden=True)
+    async def pull(self, *gamename):
+        """Pull new changes from GitHub and restart."""
+        await self.bot.say("Pulling changes...")
+        call(['git', 'pull'])
+        await self.bot.say("Restarting...")
+        await self.bot.shutdown(restart=True)
+
     @commands.command()
     @checks.is_owner()
     async def load(self, *, cog_name: str):
@@ -83,6 +98,7 @@ class Owner:
             await self.bot.say("The cog has been loaded.")
 
     @commands.group(invoke_without_command=True)
+
     @checks.is_owner()
     async def unload(self, *, cog_name: str):
         """Unloads a cog
@@ -110,6 +126,7 @@ class Owner:
             await self.bot.say("The cog has been unloaded.")
 
     @unload.command(name="all")
+
     @checks.is_owner()
     async def unload_all(self):
         """Unloads all cogs"""
@@ -164,6 +181,7 @@ class Owner:
             await self.bot.say("The cog has been reloaded.")
 
     @commands.command(name="cogs")
+
     @checks.is_owner()
     async def _show_cogs(self):
         """Shows loaded/unloaded cogs"""
@@ -190,6 +208,7 @@ class Owner:
             await self.bot.say(box(page.lstrip(" "), lang="diff"))
 
     @commands.command(pass_context=True, hidden=True)
+
     @checks.is_owner()
     async def debug(self, ctx, *, code):
         """Evaluates code"""
@@ -619,7 +638,7 @@ class Owner:
         await self.bot.say("Whitelist is now empty.")
 
     @commands.group(pass_context=True)
-    #@checks.admin_or_permissions(administrator=True)
+    @checks.admin_or_permissions(administrator=True)
     async def override(self, ctx):
         """Override management commands
 
