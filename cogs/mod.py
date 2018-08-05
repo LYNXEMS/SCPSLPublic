@@ -1273,6 +1273,7 @@ class Mod:
         """Warn a user.""" 
         server = ctx.message.server 
         issuer = ctx.message.author 
+        logchannel = discord.utils.get(server.channels, name="logs") 
         try: 
             member = ctx.message.mentions[0] 
         except IndexError: 
@@ -1290,7 +1291,8 @@ class Mod:
                                "hierarchy.")
             return
         if member.id not in warns: 
-            warns[member.id] = {"warns": []}  
+            warns[member.id] = {"warns": []} 
+        await self.bot.add_roles(member, discord.utils.get(ctx.message.server.roles, name="WARNED")) 
         warns[member.id]["name"] = member.name + "#" + member.discriminator 
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) 
         warns[member.id]["warns"].append({"issuer_id": issuer.id, "issuer_name": issuer.name, "reason": reason, "timestamp": timestamp}) 
@@ -1322,13 +1324,14 @@ class Mod:
         if reason != "":
             # much \n
             msg += "\n✏️ __Reason__: " + reason
-        logger.info(msg + ("\nPlease try to add a reason next, human." if reason == "" else ""))
+        await self.bot.send_message(logchannel, msg + ("\nPlease try to add a reason next, human." if reason == "" else ""))
 
     @commands.command(pass_context=True)
     async def listwarns(self, ctx, user):
         """List warns for a user."""
         server = ctx.message.server
         issuer = ctx.message.author
+        logchannel = discord.utils.get(server.channels, name="logs")
         try:
             member = ctx.message.mentions[0]
         except IndexError:
@@ -1359,6 +1362,7 @@ class Mod:
         """List warns for a user based on ID. Staff only."""
         server = ctx.message.server
         issuer = ctx.message.author
+        logchannel = discord.utils.get(server.channels, name="logs")
         embed = discord.Embed(color=discord.Color.dark_red())
         with open("data/warnsv2.json", "r") as f:
             warns = json.load(f)
@@ -1385,6 +1389,7 @@ class Mod:
     async def copywarns_id2id(self, ctx, user_id1, user_id2):
         """Copy warns from one user ID to another. Overwrites all warns of the target user ID. Staff only."""
         server = ctx.message.server
+        logchannel = discord.utils.get(server.channels, name="logs")
         with open("data/warnsv2.json", "r") as f:
             warns = json.load(f)
         if user_id1 not in warns:
@@ -1413,13 +1418,14 @@ class Mod:
             msg += "{} ({})".format(warns2["name"], user_id2)
         else:
             msg += user_id2
-        logger.info(msg)
+        await self.bot.send_message(logchannel, msg)
 
     @commands.has_permissions(kick_members=True)
     @commands.command(pass_context=True)
     async def delwarn(self, ctx, user, idx: int):
         """Remove a specific warn from a user. Staff only."""
         server = ctx.message.server
+        logchannel = discord.utils.get(server.channels, name="logs")
         author = ctx.message.author
         try:
             member = ctx.message.mentions[0]
@@ -1460,13 +1466,14 @@ class Mod:
             await self.bot.say("Removing Muted status if existed!")
             await self.bot.remove_roles(member, discord.utils.get(ctx.message.server.roles, name="Muted"))
         msg = "🗑 **Warn removed**: {} deleted a warn issued by {} from {} | {}#{}".format(ctx.message.author.mention, idx, member.mention, member.name, member.discriminator)
-        logger.info(msg, embed=embed)
+        await self.bot.send_message(logchannel, msg, embed=embed)
 
     @commands.has_permissions(kick_members=True)
     @commands.command(pass_context=True)
     async def delwarnid(self, ctx, user_id, idx: int):
         """Remove a specific warn from a user based on ID. Staff only."""
         server = ctx.message.server
+        logchannel = discord.utils.get(server.channels, name="logs")
         with open("data/warnsv2.json", "r") as f:
             warns = json.load(f)
         if user_id not in warns:
@@ -1490,13 +1497,14 @@ class Mod:
             json.dump(warns, f)
         await self.bot.say("Human, one warn has been deleted from {}".format(warns[user_id]["name"]))
         msg = "🗑 **Deleted warn**: {} removed warn {} from {} ({})".format(ctx.message.author.mention, idx, warns[user_id]["name"], user_id)
-        logger.info(msg, embed=embed)
+        await self.bot.send_message(logchannel, msg, embed=embed)
 
     @commands.has_permissions(kick_members=True)
     @commands.command(pass_context=True)
     async def clearwarns(self, ctx, user):
         """Clear all warns for a user. Staff only."""
         server = ctx.message.server
+        logchannel = discord.utils.get(server.channels, name="logs")
         try:
             member = ctx.message.mentions[0]
         except IndexError:
@@ -1527,13 +1535,14 @@ class Mod:
             await self.bot.say("Removing Muted status if existed!")
             await self.bot.remove_roles(member, discord.utils.get(ctx.message.server.roles, name="Muted"))
         msg = "🗑 **Cleared warns**: {} cleared {} warns from {} | {}#{}".format(ctx.message.author.mention, warn_count, member.mention, member.name, member.discriminator)
-        logger.info(msg)
+        await self.bot.send_message(logchannel, msg)
 
     @commands.has_permissions(kick_members=True)
     @commands.command(pass_context=True)
     async def clearwarnsid(self, ctx, user_id):
         """Clear all warns for a user based on ID. Staff only."""
         server = ctx.message.server
+        logchannel = discord.utils.get(server.channels, name="logs")
         with open("data/warnsv2.json", "r") as f:
             warns = json.load(f)
         if user_id not in warns:
@@ -1548,7 +1557,7 @@ class Mod:
             json.dump(warns, f)
         await self.bot.say("Human, {} no longer has any warns!".format(warns[user_id]["name"]))
         msg = "🗑 **Cleared warns**: {} cleared {} warns from {} ({})".format(ctx.message.author.mention, warn_count, warns[user_id]["name"], user_id)
-        logger.info(msg)
+        await self.bot.send_message(logchannel, msg)
 
     def escape_name(name):
         chars = "\\`*_<>#@:~"
