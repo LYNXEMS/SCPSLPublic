@@ -1322,7 +1322,7 @@ class Mod:
         if reason != "":
             # much \n
             msg += "\n✏️ __Reason__: " + reason
-        await logger.info(msg + ("\nPlease try to add a reason next, human." if reason == "" else ""))
+        logger.info(msg + ("\nPlease try to add a reason next, human." if reason == "" else ""))
 
     @commands.command(pass_context=True)
     async def listwarns(self, ctx, user):
@@ -1413,7 +1413,7 @@ class Mod:
             msg += "{} ({})".format(warns2["name"], user_id2)
         else:
             msg += user_id2
-        await logger.info(msg)
+        logger.info(msg)
 
     @commands.has_permissions(kick_members=True)
     @commands.command(pass_context=True)
@@ -1460,7 +1460,7 @@ class Mod:
             await self.bot.say("Removing Muted status if existed!")
             await self.bot.remove_roles(member, discord.utils.get(ctx.message.server.roles, name="Muted"))
         msg = "🗑 **Warn removed**: {} deleted a warn issued by {} from {} | {}#{}".format(ctx.message.author.mention, idx, member.mention, member.name, member.discriminator)
-        await logger.info(msg, embed=embed)
+        logger.info(msg, embed=embed)
 
     @commands.has_permissions(kick_members=True)
     @commands.command(pass_context=True)
@@ -1490,7 +1490,7 @@ class Mod:
             json.dump(warns, f)
         await self.bot.say("Human, one warn has been deleted from {}".format(warns[user_id]["name"]))
         msg = "🗑 **Deleted warn**: {} removed warn {} from {} ({})".format(ctx.message.author.mention, idx, warns[user_id]["name"], user_id)
-        await logger.info(msg, embed=embed)
+        logger.info(msg, embed=embed)
 
     @commands.has_permissions(kick_members=True)
     @commands.command(pass_context=True)
@@ -1527,7 +1527,7 @@ class Mod:
             await self.bot.say("Removing Muted status if existed!")
             await self.bot.remove_roles(member, discord.utils.get(ctx.message.server.roles, name="Muted"))
         msg = "🗑 **Cleared warns**: {} cleared {} warns from {} | {}#{}".format(ctx.message.author.mention, warn_count, member.mention, member.name, member.discriminator)
-        await logger.info(msg)
+        logger.info(msg)
 
     @commands.has_permissions(kick_members=True)
     @commands.command(pass_context=True)
@@ -1548,7 +1548,7 @@ class Mod:
             json.dump(warns, f)
         await self.bot.say("Human, {} no longer has any warns!".format(warns[user_id]["name"]))
         msg = "🗑 **Cleared warns**: {} cleared {} warns from {} ({})".format(ctx.message.author.mention, warn_count, warns[user_id]["name"], user_id)
-        await logger.info(msg)
+        logger.info(msg)
 
     def escape_name(name):
         chars = "\\`*_<>#@:~"
