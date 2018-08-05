@@ -1478,7 +1478,9 @@ class Mod:
         logchannel = discord.utils.get(server.channels, name="logs")
         with open("data/warnsv2.json", "r") as f:
             warns = json.load(f)
-        if user_id not in warns[server.id]:
+        if server.id not in warns:
+            await self.bot.say("Human, this server doesnt have any warned users yet.")
+        elif user_id not in warns[server.id]:
             await self.bot.say("Human, {} doesn't exist in saved warnings.".format(user_id))
             return
         warn_count = len(warns[server.id][user_id]["warns"])
