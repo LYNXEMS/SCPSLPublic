@@ -1505,16 +1505,16 @@ class Mod:
         """Clear all warns for a user. Staff only."""
         server = ctx.message.server
         logchannel = discord.utils.get(server.channels, name="logs")
-		author = ctx.message.author
+		issuer = ctx.message.author
         try:
             member = ctx.message.mentions[0]
         except IndexError:
             await self.bot.say("ERROR, user not tagged.")
             return
-        if author == member:
+        if issuer == member:
             await self.bot.say("Getting a little ahead of ourselves, eh?")
             return
-        elif not self.is_allowed_by_hierarchy(server, author, member):
+        elif not self.is_allowed_by_hierarchy(server, issuer, member):
             await self.bot.say("I cannot let you do that. You are "
                                "not higher than the user in the role "
                                "hierarchy.")
