@@ -1292,7 +1292,6 @@ class Mod:
             return
         if member.id not in warns: 
             warns[member.id] = {"warns": []} 
-        await self.bot.add_roles(member, discord.utils.get(ctx.message.server.roles, name="WARNED")) 
         warns[member.id]["name"] = member.name + "#" + member.discriminator 
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) 
         warns[member.id]["warns"].append({"issuer_id": issuer.id, "issuer_name": issuer.name, "reason": reason, "timestamp": timestamp}) 
